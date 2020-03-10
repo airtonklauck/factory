@@ -4,20 +4,11 @@ class ContatosController {
 
 		let $ = document.querySelector.bind(document);
 
-		let self = this;
-		this._listaDeContatos = new Proxy(new ListaDeContatos(), {
-			get(target, prop, receiver) {
-
-				if(typeof(target[prop]) == typeof(Function) && ['adiciona', 'apaga'].includes(prop)) {
-					return function() {
-						Reflect.apply(target[prop], target, arguments);
-						self._contatosView.update(target);
-					}
-				}
-
-				return Reflect.get(target, prop, receiver);
-			}
-		});
+		this._listaDeContatos = ProxyFactory.create(
+			new ListaDeContatos(),
+			['adiciona', 'apaga'],
+			model => this._contatosView.update(model)
+		);
 
 		this._contatosView = new ContatosView($('.tabela'));
 
